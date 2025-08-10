@@ -2,10 +2,17 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Pool;
 
+[RequireComponent(typeof(Renderer))]
 public class Cube : MonoBehaviour
 {
+    private Renderer _renderer;
     private IObjectPool<Cube> _pool;
     private bool _isHit;
+
+    private void Awake()
+    {
+        _renderer = GetComponent<Renderer>();
+    }
 
     public void Initialize(Vector3 position, IObjectPool<Cube> pool)
     {
@@ -13,7 +20,7 @@ public class Cube : MonoBehaviour
 
         _isHit = false;
         transform.position = position;
-        GetComponent<Renderer>().material.color = Color.white;
+        _renderer.material.color = Color.white;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -21,7 +28,7 @@ public class Cube : MonoBehaviour
         if (collision.collider.TryGetComponent(out Platform platform) && !_isHit)
         {
             _isHit = true;
-            GetComponent<Renderer>().material.color = Random.ColorHSV(0.3f, 0.3f);
+            _renderer.material.color = Random.ColorHSV(0.3f, 0.3f);
 
             StartCoroutine(DestroyDelayed(Random.Range(2f, 5f)));
         }
