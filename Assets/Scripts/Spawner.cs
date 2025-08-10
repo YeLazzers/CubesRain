@@ -10,10 +10,12 @@ public class Spawner : MonoBehaviour
 
     private ObjectPool<Cube> _cubePool;
     private BoxCollider _spawnArea;
+    private WaitForSeconds _wfsDelay;
 
     private void Awake()
     {
         _spawnArea = GetComponent<BoxCollider>();
+        _wfsDelay = new WaitForSeconds(_timeDelay);
     }
 
     private void Start()
@@ -60,7 +62,7 @@ public class Spawner : MonoBehaviour
     {
         while (enabled)
         {
-            yield return new WaitForSeconds(_timeDelay);
+            yield return _wfsDelay;
             _cubePool.Get();
         }
     }
