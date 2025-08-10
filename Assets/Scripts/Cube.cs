@@ -1,12 +1,13 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Pool;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Renderer))]
 public class Cube : MonoBehaviour
 {
+    public UnityAction<Cube> OnDestroyed;
+
     private Renderer _renderer;
-    private IObjectPool<Cube> _pool;
     private bool _isHit;
 
     private void Awake()
@@ -14,10 +15,8 @@ public class Cube : MonoBehaviour
         _renderer = GetComponent<Renderer>();
     }
 
-    public void Initialize(Vector3 position, IObjectPool<Cube> pool)
+    public void Initialize(Vector3 position)
     {
-        _pool = pool;
-
         _isHit = false;
         transform.position = position;
         _renderer.material.color = Color.white;
@@ -37,6 +36,6 @@ public class Cube : MonoBehaviour
     private IEnumerator DestroyDelayed(float delay)
     {
         yield return new WaitForSeconds(delay);
-        _pool.Release(this);
+        OnDestroyed?.Invoke(this);
     }
 }

@@ -35,14 +35,15 @@ public class Spawner : MonoBehaviour
     {
         Cube cube = Instantiate(_cubePrefab, transform);
 
-        cube.Initialize(GetRandomPosition(), _cubePool);
+        cube.Initialize(GetRandomPosition());
+        cube.OnDestroyed += ActionOnRelease;
 
         return cube;
     }
 
     private void ActionOnGet(Cube cube)
     {
-        cube.Initialize(GetRandomPosition(), _cubePool);
+        cube.Initialize(GetRandomPosition());
         cube.gameObject.SetActive(true);
     }
     private void ActionOnRelease(Cube cube)
@@ -51,8 +52,7 @@ public class Spawner : MonoBehaviour
     }
     private void ActionOnDestroy(Cube cube)
     {
-
-        Debug.Log($"ActionOnDestroy {cube.GetInstanceID()}");
+        cube.OnDestroyed -= ActionOnRelease;
         Destroy(cube.gameObject);
     }
 
