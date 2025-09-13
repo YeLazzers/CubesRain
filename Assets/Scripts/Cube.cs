@@ -1,25 +1,26 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
 
 [RequireComponent(typeof(Renderer))]
-public class Cube : MonoBehaviour
+public class Cube : MonoBehaviour, IPoolable<Cube>
 {
-    public UnityAction<Cube> OnDestroyed;
-
     private Renderer _renderer;
     private bool _isHit;
+
+    public event System.Action<Cube> OnExpired;
 
     private void Awake()
     {
         _renderer = GetComponent<Renderer>();
     }
 
-    public void Initialize(Vector3 position)
+    public Cube Initialize(Vector3 position)
     {
         _isHit = false;
         transform.position = position;
         _renderer.material.color = Color.white;
+
+        return this;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -27,7 +28,7 @@ public class Cube : MonoBehaviour
         if (collision.collider.TryGetComponent(out Platform platform) && !_isHit)
         {
             _isHit = true;
-            _renderer.material.color = Random.ColorHSV(0.3f, 0.3f);
+            _renderer.material.color = Random.ColorHSV();
 
             StartCoroutine(DestroyDelayed(Random.Range(2f, 5f)));
         }
@@ -36,6 +37,6 @@ public class Cube : MonoBehaviour
     private IEnumerator DestroyDelayed(float delay)
     {
         yield return new WaitForSeconds(delay);
-        OnDestroyed?.Invoke(this);
+        OnExpired?.Invoke(this);
     }
 }
